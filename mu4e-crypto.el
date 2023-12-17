@@ -77,10 +77,14 @@ Optional argument BODY contains a precedure with desired t."
 
 (defun mu4e-crypto--mark-constraint (begin end)
   (goto-char (point-min))
-  (when (search-forward begin nil t)
-      (beginning-of-line)
-      (push-mark (point) nil t)
-      (search-forward end nil t)))
+  (if (search-forward begin nil t)
+      (progn
+        (beginning-of-line)
+        (push-mark (point) nil t)
+        (if (search-forward end nil t)
+            nil
+          (error "%s not matched" end)))
+    (error "%s not matched" begin)))
 
 (defun mu4e-crypto--encrypt-message ()
   "Encrypt email content of current mu4e buffer."
