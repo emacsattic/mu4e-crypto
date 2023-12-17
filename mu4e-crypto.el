@@ -36,13 +36,12 @@
 
 (require 'cl-lib)
 
-(defvar mu4e-crypto--gpg-message-begin "-----BEGIN PGP MESSAGE-----")
+(defvar mu4e-crypto--pgp-message-begin "-----BEGIN PGP MESSAGE-----")
 
-(defvar mu4e-crypto--gpg-message-end "-----END PGP MESSAGE-----")
+(defvar mu4e-crypto--pgp-message-end "-----END PGP MESSAGE-----")
 
 (defun mu4e-crypto--gpg-exists-p ()
-  "Check if GnuPG is installed and available in the system's PATH.
-Return the path of the GnuPG executable if found, otherwise nil."
+  "Check if GnuPG is installed and available in the system's PATH."
   (or
    (executable-find "gpg")
    (executable-find "gpg2")))
@@ -76,8 +75,8 @@ Return the path of the GnuPG executable if found, otherwise nil."
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
   (mu4e-crypto--mark-constraint
-   "-----BEGIN PGP MESSAGE-----"
-   "-----END PGP MESSAGE-----"))
+   mu4e-crypto--pgp-message-begin
+   mu4e-crypto--pgp-message-end))
 
 (defun mu4e-crypto--mark-constraint (begin end)
   "Search and mark region closed by `BEGIN' and `END'."
