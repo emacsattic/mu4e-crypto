@@ -36,9 +36,9 @@
 
 (require 'cl-lib)
 
-(defvar mu4e-crypto--pgp-message-begin "-----BEGIN PGP MESSAGE-----")
+(defvar mu4e-crypto-pgp-message-begin "-----BEGIN PGP MESSAGE-----")
 
-(defvar mu4e-crypto--pgp-message-end "-----END PGP MESSAGE-----")
+(defvar mu4e-crypto-pgp-message-end "-----END PGP MESSAGE-----")
 
 (defun mu4e-crypto--gpg-exists-p ()
   "Check if GnuPG is installed and available in the system's PATH."
@@ -54,6 +54,13 @@
   "Check if current buffer is named `*mu4e-draft*' or `*mu4e-draft*<number>'."
   (string-match-p "^\\*mu4e-draft\\*\\(<[0-9]+>\\)?$" (buffer-name)))
 
+(defun mu4e-crypto--pgp-message-exists-p ()
+  "Check if any pgp-messages exist"
+  (save-excursion
+    (goto-char (point-min))
+    (and (search-forward mu4e-crypto-pgp-message-begin nil t)
+         (search-forward mu4e-crypto-pgp-message-end nil t))))
+
 (defmacro mu4e-crypto--without-yes-or-no (&rest body)
   "Override `yes-or-no-p' or `y-or-n-p', not to prompt for input and return t."
   (declare (indent 1))
@@ -66,7 +73,8 @@
   (interactive)
   (when (and
          (mu4e-crypto--message-p)
-         (mu4e-crypto--gpg-exists-p))
+         (mu4e-crypto--gpg-exists-p)
+         (mu4e-crypto--pgp-message-exists-p))
     (mu4e-crypto--mark-pgp-encrypted-message)
     (let ((start (point-min))
           (end   (point-max)))
@@ -75,8 +83,8 @@
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
   (mu4e-crypto--mark-constraint
-   mu4e-crypto--pgp-message-begin
-   mu4e-crypto--pgp-message-end))
+   mu4e-crypto-pgp-message-begin
+   mu4e-crypto-pgp-message-end))
 
 (defun mu4e-crypto--mark-constraint (begin end)
   "Search and mark region closed by `BEGIN' and `END'."
@@ -100,28 +108,29 @@
       (dolist (header headers all-found)
         (unless (re-search-forward (concat "^" (regexp-quote header)) nil t)
           (setq all-found nil)
-          (error "Email header '%s' not found." header)))
+          (error "Email header '%s' not found" header)))
       (when all-found (message "All standard email headers found.")))))
 
 (defun mu4e-crypto--encrypt-message ()
   "Encrypt email content of current mu4e buffer."
   (interactive)
-  (when (and
-         (mu4e-crypto--draft-p)
-         (mu4e-crypto--check-email-headers)
-         (mu4e-crypto--gpg-exists-p))
-    (goto-char (point-min))
-    (when (search-forward "Date:" nil t)
-      (beginning-of-line)
-      (forward-line 1)
-      (let* ((start (point))
-             (end (point-max))
-             (recipient (read-string "Enter recipient: ")))
-        (shell-command-on-region
-         start end
-         (format "gpg --encrypt --armor -r %s"
-                 (shell-quote-argument recipient))
-         nil t)))))
+  (save-excursion
+    (when (and
+           (mu4e-crypto--draft-p)
+           (mu4e-crypto--check-email-headers)
+           (mu4e-crypto--gpg-exists-p))
+      (goto-char (point-min))
+      (when (search-forward "Date:" nil t)
+        (beginning-of-line)
+        (forward-line 1)
+        (let* ((start (point))
+               (end (point-max))
+               (recipient (read-string "Enter recipient: ")))
+          (shell-command-on-region
+           start end
+           (format "gpg --encrypt --armor -r %s"
+                   (shell-quote-argument recipient))
+           nil t))))))
 
 (provide 'mu4e-crypto)
 ;;; mu4e-crypto.el ends here
