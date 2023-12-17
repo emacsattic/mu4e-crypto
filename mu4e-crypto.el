@@ -85,8 +85,9 @@ Optional argument BODY contains a precedure with desired t."
 (defun mu4e-crypto--encrypt-message ()
   "Encrypt email content of current mu4e buffer."
   (interactive)
-  (when (or (mu4e-crypto--message-p)
-            (mu4e-crypto--draft-p))
+  (when (and
+         (mu4e-crypto--draft-p)
+         (mu4e-crypto--gpg-exists-p))
     (goto-char (point-min))
     (when (search-forward "Date:" nil t)
       (beginning-of-line)
