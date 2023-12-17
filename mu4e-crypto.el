@@ -27,7 +27,7 @@
 ;;; Commentary:
 
 ;; This package provides utilities that simplify encrypting or decrypting
-;; emails for mu4e, instead of manually switching to your termial then
+;; emails for mu4e, instead of manually switching to your terminal then
 ;; running the GnuPG with tedious and repetitive arguments.
 
 ;;; Code:
