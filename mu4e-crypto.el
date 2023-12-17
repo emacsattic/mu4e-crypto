@@ -36,6 +36,10 @@
 
 (require 'cl-lib)
 
+(defvar mu4e-crypto--gpg-message-begin "-----BEGIN PGP MESSAGE-----")
+
+(defvar mu4e-crypto--gpg-message-end "-----END PGP MESSAGE-----")
+
 (defun mu4e-crypto--gpg-exists-p ()
   "Check if GnuPG is installed and available in the system's PATH.
 Return the path of the GnuPG executable if found, otherwise nil."
@@ -52,8 +56,7 @@ Return the path of the GnuPG executable if found, otherwise nil."
   (string-match-p "^\\*mu4e-draft\\*\\(<[0-9]+>\\)?$" (buffer-name)))
 
 (defmacro mu4e-crypto--without-yes-or-no (&rest body)
-  "Override `yes-or-no-p' or `y-or-n-p', not to prompt for input and return t.
-Optional argument BODY contains a precedure with desired t."
+  "Override `yes-or-no-p' or `y-or-n-p', not to prompt for input and return t."
   (declare (indent 1))
   `(cl-letf (((symbol-function 'yes-or-no-p) (lambda (&rest _) t))
              ((symbol-function 'y-or-n-p) (lambda (&rest _) t)))
@@ -71,11 +74,13 @@ Optional argument BODY contains a precedure with desired t."
       (mu4e-crypto--without-yes-or-no (epa-decrypt-region start end)))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
+  "Search and mark region that is a PGP message."
   (mu4e-crypto--mark-constraint
    "-----BEGIN PGP MESSAGE-----"
    "-----END PGP MESSAGE-----"))
 
 (defun mu4e-crypto--mark-constraint (begin end)
+  "Search and mark region closed by `BEGIN' and `END'."
   (goto-char (point-min))
   (if (search-forward begin nil t)
       (progn
