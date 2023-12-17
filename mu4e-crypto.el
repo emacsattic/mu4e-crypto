@@ -32,8 +32,6 @@
 
 ;;; Code:
 
-(require 'epa)
-
 (require 'cl-lib)
 
 (defvar mu4e-crypto-pgp-message-begin "-----BEGIN PGP MESSAGE-----")
@@ -71,14 +69,17 @@
 (defun mu4e-crypto--decrypt-message ()
   "Decrypt email content of current mu4e buffer."
   (interactive)
-  (when (and
-         (mu4e-crypto--message-p)
-         (mu4e-crypto--gpg-exists-p)
-         (mu4e-crypto--pgp-message-exists-p))
+  (when
+      (and (mu4e-crypto--message-p)
+           (mu4e-crypto--gpg-exists-p)
+           (mu4e-crypto--pgp-message-exists-p))
     (mu4e-crypto--mark-pgp-encrypted-message)
-    (let ((start (point-min))
-          (end   (point-max)))
-      (mu4e-crypto--without-yes-or-no (epa-decrypt-region start end)))))
+    (let* ((secret (buffer-substring-no-properties (region-beginning) (region-end)))
+           (temp-dir (expand-file-name "~/.cache/"))
+           (temp-file (make-temp-name (expand-file-name "emacs-mu4e-crypto-" temp-dir))))
+      (with-temp-file temp-file (insert secret))
+      (shell-command (concat "cat " temp-file " | " "gpg --decrypt"))
+      (deactivate-mark))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
@@ -115,19 +116,18 @@
   "Encrypt email content of current mu4e buffer."
   (interactive)
   (save-excursion
-    (when (and
-           (mu4e-crypto--draft-p)
-           (mu4e-crypto--check-email-headers)
-           (mu4e-crypto--gpg-exists-p))
+    (when
+        (and (mu4e-crypto--draft-p)
+             (mu4e-crypto--check-email-headers)
+             (mu4e-crypto--gpg-exists-p))
       (goto-char (point-min))
       (when (search-forward "Date:" nil t)
         (beginning-of-line)
         (forward-line 1)
-        (let* ((start (point))
-               (end (point-max))
-               (recipient (read-string "Enter recipient: ")))
+        (let ((recipient (read-string "Enter recipient: ")))
           (shell-command-on-region
-           start end
+           (point)
+           (point-max)
            (format "gpg --encrypt --armor -r %s"
                    (shell-quote-argument recipient))
            nil t))))))
