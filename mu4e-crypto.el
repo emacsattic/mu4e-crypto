@@ -38,27 +38,27 @@
 
 (defun mu4e-crypto--gpg-exists-p ()
   "Check if GnuPG is installed and available in the system's PATH.
-  Return the path of the GnuPG executable if found, otherwise nil."
+Return the path of the GnuPG executable if found, otherwise nil."
   (or
    (executable-find "gpg")
    (executable-find "gpg2")))
 
 (defun mu4e-crypto--message-p ()
-  "Check if current buffer named `*mu4e-article*'"
+  "Check if current buffer named `*mu4e-article*'."
   (string= (buffer-name) "*mu4e-article*"))
 
 (defun mu4e-crypto--draft-p ()
-  "Check if  current buffer is named `*mu4e-draft*` or `*mu4e-draft*<number>`."
+  "Check if  current buffer is named `*mu4e-draft*' or `*mu4e-draft*<number>'."
   (string-match-p "^\\*mu4e-draft\\*\\(<[0-9]+>\\)?$" (buffer-name)))
 
-(defmacro without-yes-or-no (&rest body)
-  "Override `yes-or-no-p' & `y-or-n-p', not to prompt for input and return t."
+(defmacro mu4e-crypto--without-yes-or-no (&rest body)
+  "Override `yes-or-no-p' or `y-or-n-p', not to prompt for input and return t.
+Optional argument BODY contains a precedure with desired t."
   (declare (indent 1))
   `(cl-letf (((symbol-function 'yes-or-no-p) (lambda (&rest _) t))
              ((symbol-function 'y-or-n-p) (lambda (&rest _) t)))
     ,@body))
 
-;;;###autoload
 (defun mu4e-crypto--decrypt-message ()
   "Decrypt email content of current mu4e buffer."
   (interactive)
@@ -68,7 +68,7 @@
     (mu4e-crypto--mark-pgp-encrypted-message)
     (let ((start (point-min))
           (end   (point-max)))
-      (without-yes-or-no (epa-decrypt-region start end)))))
+      (mu4e-crypto--without-yes-or-no (epa-decrypt-region start end)))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   (mu4e-crypto--mark-constraint
@@ -82,7 +82,6 @@
       (push-mark (point) nil t)
       (search-forward end nil t)))
 
-;;;###autoload
 (defun mu4e-crypto--encrypt-message ()
   "Encrypt email content of current mu4e buffer."
   (interactive)
