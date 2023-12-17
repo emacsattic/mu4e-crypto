@@ -48,7 +48,7 @@ Return the path of the GnuPG executable if found, otherwise nil."
   (string= (buffer-name) "*mu4e-article*"))
 
 (defun mu4e-crypto--draft-p ()
-  "Check if  current buffer is named `*mu4e-draft*' or `*mu4e-draft*<number>'."
+  "Check if current buffer is named `*mu4e-draft*' or `*mu4e-draft*<number>'."
   (string-match-p "^\\*mu4e-draft\\*\\(<[0-9]+>\\)?$" (buffer-name)))
 
 (defmacro mu4e-crypto--without-yes-or-no (&rest body)
