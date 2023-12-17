@@ -59,13 +59,6 @@
     (and (search-forward mu4e-crypto-pgp-message-begin nil t)
          (search-forward mu4e-crypto-pgp-message-end nil t))))
 
-(defmacro mu4e-crypto--without-yes-or-no (&rest body)
-  "Override `yes-or-no-p' or `y-or-n-p', not to prompt for input and return t."
-  (declare (indent 1))
-  `(cl-letf (((symbol-function 'yes-or-no-p) (lambda (&rest _) t))
-             ((symbol-function 'y-or-n-p) (lambda (&rest _) t)))
-    ,@body))
-
 (defun mu4e-crypto--decrypt-message ()
   "Decrypt email content of current mu4e buffer."
   (interactive)
