@@ -90,11 +90,25 @@
           (error "%s not matched" end)))
     (error "%s not matched" begin)))
 
+(defun mu4e-crypto--check-email-headers ()
+  "Check if the current `*mu4e-draft*' buffer contains the standard email headers."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((headers '("From:" "To:" "Subject:" "Date:"))
+          (all-found t))
+      (dolist (header headers all-found)
+        (unless (re-search-forward (concat "^" (regexp-quote header)) nil t)
+          (setq all-found nil)
+          (error "Email header '%s' not found." header)))
+      (when all-found (message "All standard email headers found.")))))
+
 (defun mu4e-crypto--encrypt-message ()
   "Encrypt email content of current mu4e buffer."
   (interactive)
   (when (and
          (mu4e-crypto--draft-p)
+         (mu4e-crypto--check-email-headers)
          (mu4e-crypto--gpg-exists-p))
     (goto-char (point-min))
     (when (search-forward "Date:" nil t)
