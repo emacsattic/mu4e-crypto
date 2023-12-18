@@ -70,9 +70,12 @@
     (let* ((secret (buffer-substring-no-properties (region-beginning) (region-end)))
            (temp-dir (expand-file-name "~/.cache/"))
            (temp-file (make-temp-name (expand-file-name "emacs-mu4e-crypto-" temp-dir))))
+      (get-buffer-create "*mu4e-decrypted*")
       (with-temp-file temp-file (insert secret))
-      (shell-command (concat "cat " temp-file " | " "gpg --decrypt"))
-      (deactivate-mark))))
+      (call-process "gpg" nil "*mu4e-decrypted*" nil
+                    "--decrypt" temp-file)
+      (deactivate-mark)
+      (switch-to-buffer "*mu4e-decrypted*"))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
