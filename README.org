@@ -1,6 +1,8 @@
 * Mu4e-crypto
 [[https://www.gnu.org/licenses/gpl-3.0][file:https://img.shields.io/badge/License-GPLv3-blue.svg]]
 
+| [[https://sm.ms/image/Y1FzRZMJkNSXxEc][file:https://s2.loli.net/2023/12/18/Y1FzRZMJkNSXxEc.gif]] | [[https://sm.ms/image/6RVY1KvaEtk4rpg][file:https://s2.loli.net/2023/12/18/6RVY1KvaEtk4rpg.gif]] |
+
 This package provides utilities that simplify encrypting or decrypting emails for mu4e, instead of manually switching to your terminal then running the GnuPG with tedious and repetitive arguments.
 ** Installation
 #+BEGIN_SRC
