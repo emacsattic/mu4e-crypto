@@ -32,11 +32,11 @@
 
 ;;; Code:
 
-(require 'cl-lib)
+(defvar mu4e-crypto--pgp-message-begin "-----BEGIN PGP MESSAGE-----")
 
-(defvar mu4e-crypto-pgp-message-begin "-----BEGIN PGP MESSAGE-----")
+(defvar mu4e-crypto--pgp-message-end "-----END PGP MESSAGE-----")
 
-(defvar mu4e-crypto-pgp-message-end "-----END PGP MESSAGE-----")
+(defvar mu4e-crypto--decrypted-buffer-name "*mu4e-decrypted*")
 
 (defun mu4e-crypto--gpg-exists-p ()
   "Check if GnuPG is installed and available in the system's PATH."
@@ -53,13 +53,14 @@
   (string-match-p "^\\*mu4e-draft\\*\\(<[0-9]+>\\)?$" (buffer-name)))
 
 (defun mu4e-crypto--pgp-message-exists-p ()
-  "Check if any pgp-messages exist"
+  "Check if any pgp-messages exist."
   (save-excursion
     (goto-char (point-min))
     (and (search-forward mu4e-crypto-pgp-message-begin nil t)
          (search-forward mu4e-crypto-pgp-message-end nil t))))
 
-(defun mu4e-crypto--decrypt-message ()
+;;;###autoload
+(defun mu4e-crypto-decrypt-message ()
   "Decrypt email content of current mu4e buffer."
   (interactive)
   (when
@@ -70,21 +71,23 @@
     (let* ((secret (buffer-substring-no-properties (region-beginning) (region-end)))
            (temp-dir (expand-file-name "~/.cache/"))
            (temp-file (make-temp-name (expand-file-name "emacs-mu4e-crypto-" temp-dir))))
-      (get-buffer-create "*mu4e-decrypted*")
+      (get-buffer-create mu4e--crypto-decrypted-buffer-name)
       (with-temp-file temp-file (insert secret))
       (call-process "gpg" nil "*mu4e-decrypted*" nil
                     "--decrypt" temp-file)
       (deactivate-mark)
-      (switch-to-buffer "*mu4e-decrypted*"))))
+      (switch-to-buffer mu4e-crypto--decrypted-buffer-name))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
   (mu4e-crypto--mark-constraint
-   mu4e-crypto-pgp-message-begin
-   mu4e-crypto-pgp-message-end))
+   mu4e-crypto--pgp-message-begin
+   mu4e-crypto--pgp-message-end))
 
 (defun mu4e-crypto--mark-constraint (begin end)
-  "Search and mark region closed by `BEGIN' and `END'."
+  "Search and mark region closed by `BEGIN' and `END'.
+Argument BEGIN string begin.
+Argument END string end."
   (goto-char (point-min))
   (if (search-forward begin nil t)
       (progn
@@ -96,7 +99,7 @@
     (error "%s not matched" begin)))
 
 (defun mu4e-crypto--check-email-headers ()
-  "Check if the current `*mu4e-draft*' buffer contains the standard email headers."
+  "Check if all standard email headers found."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -108,7 +111,8 @@
           (error "Email header '%s' not found" header)))
       (when all-found (message "All standard email headers found.")))))
 
-(defun mu4e-crypto--encrypt-message ()
+;;;###autoload
+(defun mu4e-crypto-encrypt-message ()
   "Encrypt email content of current mu4e buffer."
   (interactive)
   (save-excursion
