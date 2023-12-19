@@ -56,8 +56,8 @@
   "Check if any pgp-messages exist."
   (save-excursion
     (goto-char (point-min))
-    (and (search-forward mu4e-crypto-pgp-message-begin nil t)
-         (search-forward mu4e-crypto-pgp-message-end nil t))))
+    (and (search-forward mu4e-crypto--pgp-message-begin nil t)
+         (search-forward mu4e-crypto--pgp-message-end nil t))))
 
 ;;;###autoload
 (defun mu4e-crypto-decrypt-message ()
@@ -71,7 +71,7 @@
     (let* ((secret (buffer-substring-no-properties (region-beginning) (region-end)))
            (temp-dir (expand-file-name "~/.cache/"))
            (temp-file (make-temp-name (expand-file-name "emacs-mu4e-crypto-" temp-dir))))
-      (get-buffer-create mu4e--crypto-decrypted-buffer-name)
+      (get-buffer-create mu4e-crypto--decrypted-buffer-name)
       (with-temp-file temp-file (insert secret))
       (call-process "gpg" nil "*mu4e-decrypted*" nil
                     "--decrypt" temp-file)
