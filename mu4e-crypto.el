@@ -33,7 +33,7 @@
 ;; `mu4e-crypto-encrypt-message' replaces messages with ciphertext directly.
 ;;
 ;; `mu4e-crypto-decrypt-message' decrypts messages, and displays decrypted
-;; messages in `*mu4e-decrtped*' buffer.
+;; messages in `*mu4e-decrypted*' buffer.
 
 ;;; Code:
 
