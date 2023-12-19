@@ -7,8 +7,8 @@ This package provides utilities that simplify encrypting or decrypting emails fo
 ** Installation
 #+BEGIN_SRC
 (load "/your/path/to/package")
-(define-key mu4e-compose-mode-map (kbd "C-c C-m e") 'mu4e-crypto--encrypt-message)
-(define-key mu4e-view-mode-map (kbd "C-c C-m d") 'mu4e-crypto--decrypt-message)
+(define-key mu4e-compose-mode-map (kbd "C-c C-m e") 'mu4e-crypto-encrypt-message)
+(define-key mu4e-view-mode-map (kbd "C-c C-m d") 'mu4e-crypto-decrypt-message)
 #+END_SRC
 ** Copying
 This program is free software: you can redistribute it and/or modify
