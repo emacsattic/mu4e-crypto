@@ -37,11 +37,11 @@
 
 ;;; Code:
 
-(defvar mu4e-crypto--pgp-message-begin "-----BEGIN PGP MESSAGE-----")
+(defconst mu4e-crypto--pgp-message-begin "-----BEGIN PGP MESSAGE-----")
 
-(defvar mu4e-crypto--pgp-message-end "-----END PGP MESSAGE-----")
+(defconst mu4e-crypto--pgp-message-end "-----END PGP MESSAGE-----")
 
-(defvar mu4e-crypto--decrypted-buffer-name "*mu4e-decrypted*")
+(defconst mu4e-crypto--decrypted-buffer-name "*mu4e-decrypted*")
 
 (defun mu4e-crypto--gpg-exists-p ()
   "Check if GnuPG is installed and available in the system's PATH."
