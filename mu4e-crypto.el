@@ -90,18 +90,14 @@
    mu4e-crypto--pgp-message-end))
 
 (defun mu4e-crypto--mark-constraint (begin end)
-  "Search and mark region closed by `BEGIN' and `END'.
-Argument BEGIN string begin.
-Argument END string end."
+  "Search and mark region closed by BEGIN and END."
   (goto-char (point-min))
-  (if (search-forward begin nil t)
-      (progn
-        (beginning-of-line)
-        (push-mark (point) nil t)
-        (if (search-forward end nil t)
-            nil
-          (error "%s not matched" end)))
-    (error "%s not matched" begin)))
+  (if (not (search-forward begin nil t))
+      (user-error "%s not matched" begin)
+    (beginning-of-line)
+    (push-mark (point) nil t)
+    (if (not (search-forward end nil t))
+        (user-error "%s not matched" end))))
 
 (defun mu4e-crypto--check-email-headers ()
   "Check if all standard email headers found."
