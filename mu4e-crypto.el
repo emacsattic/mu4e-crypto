@@ -73,15 +73,13 @@
            (mu4e-crypto--gpg-exists-p)
            (mu4e-crypto--pgp-message-exists-p))
     (mu4e-crypto--mark-pgp-encrypted-message)
-    (let* ((secret (buffer-substring-no-properties (region-beginning) (region-end)))
-           (temp-dir (expand-file-name "~/.cache/"))
-           (temp-file (make-temp-name (expand-file-name "emacs-mu4e-crypto-" temp-dir))))
-      (get-buffer-create mu4e-crypto--decrypted-buffer-name)
-      (with-temp-file temp-file (insert secret))
-      (call-process "gpg" nil "*mu4e-decrypted*" nil
-                    "--decrypt" temp-file)
-      (deactivate-mark)
-      (switch-to-buffer mu4e-crypto--decrypted-buffer-name))))
+    (let ((secret (buffer-substring-no-properties (region-beginning) (region-end))))
+      (switch-to-buffer (get-buffer-create mu4e-crypto--decrypted-buffer-name))
+      (insert secret)
+      (unless (zerop (shell-command-on-region
+                      (point-min) (point-max) "gpg --decrypt"
+                      mu4e-crypto--decrypted-buffer-name t))
+        (user-error "Decrtption failed")))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
