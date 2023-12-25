@@ -107,7 +107,7 @@
       (dolist (header headers all-found)
         (unless (re-search-forward (concat "^" (regexp-quote header)) nil t)
           (setq all-found nil)
-          (error "Email header '%s' not found" header)))
+          (user-error "Email header '%s' not found" header)))
       (when all-found (message "All standard email headers found.")))))
 
 ;;;###autoload
