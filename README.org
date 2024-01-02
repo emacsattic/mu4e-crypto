@@ -1,4 +1,5 @@
 * Mu4e-crypto
+[[https://melpa.org/#/mu4e-crypto][file:https://melpa.org/packages/mu4e-crypto-badge.svg]]
 [[https://www.gnu.org/licenses/gpl-3.0][file:https://img.shields.io/badge/License-GPLv3-blue.svg]]
 
 | [[https://sm.ms/image/Y1FzRZMJkNSXxEc][file:https://s2.loli.net/2023/12/18/Y1FzRZMJkNSXxEc.gif]] | [[https://sm.ms/image/6RVY1KvaEtk4rpg][file:https://s2.loli.net/2023/12/18/6RVY1KvaEtk4rpg.gif]] |
