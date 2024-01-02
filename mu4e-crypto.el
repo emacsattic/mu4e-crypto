@@ -79,7 +79,7 @@
       (unless (zerop (shell-command-on-region
                       (point-min) (point-max) "gpg --decrypt"
                       mu4e-crypto--decrypted-buffer-name t))
-        (user-error "Decrtption failed")))))
+        (user-error "Decryption failed: gpg exited with a non-zero return code")))))
 
 (defun mu4e-crypto--mark-pgp-encrypted-message ()
   "Search and mark region that is a PGP message."
