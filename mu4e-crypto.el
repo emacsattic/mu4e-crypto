@@ -1,8 +1,8 @@
 ;;; mu4e-crypto.el --- Encrypt and decrypt emails for mu4e with GnuPG -*- lexical-binding: t -*-
 
-;; Copyright (C) 2023-2024 Meritamen <meritamen@sdf.org>
+;; Copyright (C) 2023-2024 Shira Filianore <meritamen@sdf.org>
 
-;; Author: Meritamen <meritamen@sdf.org>
+;; Author: Shira Filianore <meritamen@sdf.org>
 ;; URL: https://github.com/meritamen/mu4e-crypto
 ;; Version: 0.0.1
 ;; Package-Requires: ((emacs "24.3"))
